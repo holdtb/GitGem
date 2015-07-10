@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+gem 'git'
+gem 'pry'
+gem 'pry-byebug'
+gem 'rest-client'
+gem 'json'
