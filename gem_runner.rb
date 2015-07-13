@@ -2,5 +2,9 @@ require_relative 'lib/holy_git'
 require_relative 'lib/commit'
 
 class Runner
-    HolyGit.get_last_local_commit
+  hg = HolyGit.new
+  puts "Getting last local commit..."
+  hg.print_last_local_commit
+  puts "Getting last remote commit..."
+  hg.print_last_remote_commit(HolyGit.execute_github_get_request)
 end
