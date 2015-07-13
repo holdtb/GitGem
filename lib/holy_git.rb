@@ -1,32 +1,45 @@
 require 'rubygems'
-require 'net/http'
 require 'git'
+require 'bundler/setup'
+require 'pry'
+require 'rest-client'
+require 'json'
+
 class HolyGit
   attr_accessor :local_commit
   attr_accessor :remote_commit
 
   def init_remote_commit
     @remote_commit = Commit.new
-    @remote_commit[:owner] = "holdtb"
-    @remote_commit[:repo] = "GitGem"
-    @remote_commit[:branch] = "master"
-  end
-
-  def self.get_last_remote_commit
-    url = "repos/#{:remote_commit[:owner]}/#{:remote_commit[:repo]}/branches/#{:remote_commit[:branch]}"
-    req = Net::HTTP::Get.new(url.to_str)
-    result = Net::HTTP.start(url.host, url.port) {|http|
-      http.request(req)
-    }
-    puts res.body
+    @remote_commit.owner = "holdtb"
+    @remote_commit.repo = "GitGem"
+    @remote_commit.branch = "master"
   end
 
 
-  def self.get_last_local_commit
+  def self.execute_github_get_request
+    url = "https://api.github.com/repos/holdtb/GitGem/branches/master"
+    unparsed_json = RestClient.get url
+    result = JSON.parse(unparsed_json)
+    return result
+  end
+
+  def print_last_remote_commit(parsed_json_get_request)
+    commit_date = parsed_json_get_request["commit"]["commit"]["author"]["date"]
+    commit_message = parsed_json_get_request["commit"]["commit"]["message"]
+    commit_author = parsed_json_get_request["commit"]["commit"]["author"]["name"]
+    puts "#{commit_date} - #{commit_message} by #{commit_author}"
+  end
+
+  def print_last_local_commit
     g = Git.open(Dir.pwd)
-
-    g.log.each do |commit|
-      puts commit.date.strftime("%m-%d-%y")
+    g.log(1).each do |commit|
+      puts "#{commit.date.strftime("%m-%d-%y")} - #{commit.message} by #{commit.author.name}"
     end
   end
+
+  def self.time_since_last_commit
+
+  end
+
 end
