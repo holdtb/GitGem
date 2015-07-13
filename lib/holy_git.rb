@@ -4,8 +4,9 @@ require 'bundler/setup'
 require 'pry'
 require 'rest-client'
 require 'json'
+require 'thor'
 
-class HolyGit
+class HolyGit < Thor
   attr_accessor :local_commit
   attr_accessor :remote_commit
 
@@ -38,8 +39,13 @@ class HolyGit
     end
   end
 
-  def self.time_since_last_commit
-
+  def is_local_behind_remote?(remote_name = 'origin')
+    g = Git.open(Dir.pwd)
+    puts "fetching from remote #{remote_name}..."
+    g.fetch
+    #g.lib.send(:command, 'status', '-s')
+    puts "Executing git status...."
+    IO.popen("git status"){|o| puts o.gets}
   end
 
 end
